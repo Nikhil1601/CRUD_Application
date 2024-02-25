@@ -1,18 +1,17 @@
-import chai from "chai";
-import chaiHttp from "chai-http";
-import app from "../app.mjs"; // Update the file extension to .mjs
-import { Blog } from "../models/Blog.mjs";
- // Update the file extension to .mjs
-
-
+const Blog = require("../models/Blog");
+const chai = require("chai");
+const chaiHttp = require("chai-http");
+const app = require("../app");
 chai.should();
+
 chai.use(chaiHttp);
 
 describe("Blogs", () => {
-  beforeEach(async () => {
-    await Blog.deleteMany({});
+  beforeEach((done) => {
+    Blog.deleteMany({}, (err) => {
+      done();
+    });
   });
-
   describe("/GET blog", () => {
     it("it should GET all the blogs", (done) => {
       chai
@@ -26,7 +25,6 @@ describe("Blogs", () => {
         });
     });
   });
-
   describe("/POST blog", () => {
     it("it should new POST a blog", (done) => {
       let blog = {
@@ -47,7 +45,6 @@ describe("Blogs", () => {
         });
     });
   });
-
   describe("/GET/:id blog", () => {
     it("it should GET a blog by the id", (done) => {
       let blog = new Blog({
@@ -70,7 +67,6 @@ describe("Blogs", () => {
       });
     });
   });
-
   describe("/PUT/:id blog", () => {
     it("it should UPDATE a blog given the id", (done) => {
       let blog = new Blog({
@@ -80,6 +76,7 @@ describe("Blogs", () => {
           "https://images.unsplash.com/photo-1518791841217-8f162f1e1131?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60",
       });
       blog.save((err, blog) => {
+        console.log(blog.id);
         chai
           .request(app)
           .put("/api/blogs/" + blog.id)
@@ -98,7 +95,6 @@ describe("Blogs", () => {
       });
     });
   });
-
   describe("/DELETE/:id blog", () => {
     it("it should DELETE a blog given the id", (done) => {
       let blog = new Blog({
@@ -121,5 +117,3 @@ describe("Blogs", () => {
     });
   });
 });
-
-export {};
